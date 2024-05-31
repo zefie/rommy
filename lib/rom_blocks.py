@@ -468,32 +468,35 @@ class rom_blocks():
 
                 # Not exactly sure why blocks are ordered this way. I'm sure Fadden and team had a reason.
 
-                if end_block_size > end_reserve_size and file_size > ((block_size * 2) + (block_size - end_reserve_size)):
-                    end_block_offset = file_size - (block_size - end_reserve_size) - block_size
+                if build_info != None and build_info["image_type"] == IMAGE_TYPE.ORIG_CLASSIC_BOX:
+                   if end_block_size > end_reserve_size and file_size > ((block_size * 2) + (block_size - end_reserve_size)):
+                       end_block_offset = file_size - (block_size - end_reserve_size) - block_size
 
-                    check_rom_blocks.append({
-                        "offset": end_block_offset,
-                        "size": block_size,
-                        "compression_type": compression_type,
-                        "signature_type": signature_type,
-                        "block_data": bytearray(0x00)
-                    })
+                       check_rom_blocks.append({
+                           "offset": end_block_offset,
+                           "size": block_size,
+                           "compression_type": compression_type,
+                           "signature_type": signature_type,
+                           "block_data": bytearray(0x00)
+                       })
 
-                    check_rom_blocks.append({
-                        "offset": (end_block_offset + block_size),
-                        "size": (block_size - 0x4000),
-                        "compression_type": compression_type,
-                        "signature_type": signature_type,
-                        "block_data": bytearray(0x00)
-                    })
+                       check_rom_blocks.append({
+                           "offset": (end_block_offset + block_size),
+                           "size": (block_size - 0x4000),
+                           "compression_type": compression_type,
+                           "signature_type": signature_type,
+                           "block_data": bytearray(0x00)
+                       })
+                   else:
+                       check_rom_blocks.append({
+                           "offset": end_block_offset,
+                           "size": end_block_size,
+                           "compression_type": compression_type,
+                           "signature_type": signature_type,
+                           "block_data": bytearray(0x00)
+                       })
                 else:
-                    check_rom_blocks.append({
-                        "offset": end_block_offset,
-                        "size": end_block_size,
-                        "compression_type": compression_type,
-                        "signature_type": signature_type,
-                        "block_data": bytearray(0x00)
-                    })
+                    end_block_offset = file_size
 
                 for block_offset in range(block_size, end_block_offset, block_size):
                     block_size = min(block_size, (end_block_offset - block_offset))
